@@ -34,12 +34,12 @@ if (input[0] === "add") {
     done: false,
     createdAt: date.toLocaleString(),
   };
-  const obj = {
-    task: tskobj,
-  };
 
-  // @ts-ignore
-  let filedata = JSON.parse(fs.readFileSync("./tasks.json"));
-  filedata.push(obj);
+  let [filedata] = JSON.parse(fs.readFileSync("./tasks.json").toString());
+  const nestedTask = filedata.task;
+  await nestedTask.push(tskobj);
   fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
+  console.log("Task Added!");
 }
+
+
