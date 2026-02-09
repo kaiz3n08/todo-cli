@@ -23,6 +23,9 @@ type obj = {
   createdAt: string;
 };
 
+let filedata = JSON.parse(fs.readFileSync("./tasks.json").toString());
+const nestedTask = filedata.task;
+
 if (input[0] === "add") {
   const task: string = input[1] as string;
   const date = new Date();
@@ -35,11 +38,23 @@ if (input[0] === "add") {
     createdAt: date.toLocaleString(),
   };
 
-  let [filedata] = JSON.parse(fs.readFileSync("./tasks.json").toString());
-  const nestedTask = filedata.task;
   await nestedTask.push(tskobj);
   fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
   console.log("Task Added!");
 }
 
+if (input[0] === "remove") {
+  const findinTask: obj = nestedTask.find(
+    (e: obj) => e.task === (input[1] as string),
+  );
 
+  const IndexOfUserTask: obj = nestedTask.indexOf(findinTask);
+
+  if (findinTask) {
+    await nestedTask.splice(IndexOfUserTask, 1);
+    fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
+    console.log("Task removed!");
+  } else {
+    console.error("Task Don't exist!");
+  }
+}
