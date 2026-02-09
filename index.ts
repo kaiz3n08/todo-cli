@@ -21,21 +21,27 @@ type obj = {
   task: string;
   done: boolean;
   createdAt: string;
+  updatedAt: string;
 };
 
 let filedata = JSON.parse(fs.readFileSync("./tasks.json").toString());
 const nestedTask = filedata.task;
+const findinTask: obj = nestedTask.find(
+  (e: obj) => e.task === (input[1] as string),
+);
+const IndexOfUserTask = nestedTask.indexOf(findinTask);
+const date = new Date();
 
 if (input[0] === "add") {
   const task: string = input[1] as string;
-  const date = new Date();
   const id = uid(12);
 
   const tskobj: obj = {
     id: id,
     task: task,
     done: false,
-    createdAt: date.toLocaleString(),
+    createdAt: date.toLocaleString("en-Us", { timeZone: "Asia/Calcutta" }),
+    updatedAt: "Not Updated yet!",
   };
 
   await nestedTask.push(tskobj);
@@ -43,18 +49,41 @@ if (input[0] === "add") {
   console.log("Task Added!");
 }
 
+if (!findinTask) {
+  console.error("Task Don't exist!");
+}
+
 if (input[0] === "remove") {
-  const findinTask: obj = nestedTask.find(
-    (e: obj) => e.task === (input[1] as string),
-  );
+  if (!input[1]) {
+    console.error("Please Provide task name");
+  }
 
-  const IndexOfUserTask: obj = nestedTask.indexOf(findinTask);
-
-  if (findinTask) {
+  if (findinTask || IndexOfUserTask > 0) {
     await nestedTask.splice(IndexOfUserTask, 1);
     fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
     console.log("Task removed!");
-  } else {
-    console.error("Task Don't exist!");
+  }
+}
+
+if (input[0] === "update") {
+  if (input[1] && !input[2]) {
+    console.error(
+      "PLease provide second arugement! \n For help type update -h",
+    );
+  }
+
+  if (input[1] && input[2] && findinTask) {
+    const UpdatedObj: obj = {
+      id: findinTask.id,
+      task: input[2] as string,
+      done: findinTask.done,
+      createdAt: findinTask.createdAt,
+      updatedAt: date.toLocaleString("en-Us", { timeZone: "Asia/Calcutta" }),
+    };
+
+    await nestedTask.splice(IndexOfUserTask, 1, UpdatedObj);
+
+    fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
+    console.log("Task Updated!");
   }
 }
