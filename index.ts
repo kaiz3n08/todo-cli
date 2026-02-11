@@ -49,11 +49,10 @@ if (input[0] === "add") {
   console.log("Task Added!");
 }
 
-if (!findinTask) {
-  console.error("Task Don't exist!");
-}
-
 if (input[0] === "remove") {
+  if (!findinTask) {
+    console.error("Task Don't exist!");
+  }
   if (!input[1]) {
     console.error("Please Provide task name");
   }
@@ -80,10 +79,26 @@ if (input[0] === "update") {
       createdAt: findinTask.createdAt,
       updatedAt: date.toLocaleString("en-Us", { timeZone: "Asia/Calcutta" }),
     };
-
     await nestedTask.splice(IndexOfUserTask, 1, UpdatedObj);
 
     fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
     console.log("Task Updated!");
+  }
+}
+
+if (input[0] === "done") {
+  if (findinTask?.task != input[1]) {
+    console.error("Task is either wrong or don't exist!");
+  } else {
+    const doneObj: obj = {
+      id: findinTask.id,
+      task: findinTask.task,
+      done: input[2] as unknown as boolean,
+      createdAt: findinTask.createdAt,
+      updatedAt: findinTask.updatedAt,
+    };
+    await nestedTask.splice(IndexOfUserTask, 1, doneObj);
+    fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
+    console.log("Task Done!");
   }
 }
