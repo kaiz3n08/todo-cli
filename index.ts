@@ -87,13 +87,14 @@ if (input[0] === "update") {
 }
 
 if (input[0] === "done") {
+  const booleanValue = Boolean(input[2]);
   if (findinTask?.task != input[1]) {
     console.error("Task is either wrong or don't exist!");
   } else {
     const doneObj: obj = {
       id: findinTask.id,
       task: findinTask.task,
-      done: input[2] as unknown as boolean,
+      done: booleanValue,
       createdAt: findinTask.createdAt,
       updatedAt: findinTask.updatedAt,
     };
@@ -101,4 +102,22 @@ if (input[0] === "done") {
     fs.writeFileSync("./tasks.json", JSON.stringify(filedata, null, 2));
     console.log("Task Done!");
   }
+}
+
+if (input[0] === "-nd") {
+  const FindiNotDone: obj = await nestedTask.filter((ej: obj) => {
+    return ej.done === false;
+  });
+  console.log(FindiNotDone);
+}
+
+if (input[0] === "-d") {
+  const DoneTask: obj = await nestedTask.filter((e: obj) => {
+    return e.done === true;
+  });
+  console.log(DoneTask);
+}
+
+if (input[0] === "-a") {
+  console.log(nestedTask);
 }
